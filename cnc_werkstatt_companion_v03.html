@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#263746">
+<title>CNC Werkstatt – Schritt für Schritt</title>
+<style>
+:root{--navy:#263746;--navy2:#344b5d;--bg:#edf1f4;--card:#fff;--line:#d5dde3;--muted:#62717d;--blue:#176b9a;--blue2:#e7f2f9;--green:#26734d;--amber:#fff3d8;--red:#a33d37}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:#1d2932;font:15px -apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
+header{background:var(--navy);color:#fff;padding:17px 16px 15px}header .brand{font-weight:800;letter-spacing:.7px;font-size:18px}header p{margin:5px 0 0;color:#d2dce3;font-size:12px}
+main{max-width:850px;margin:0 auto;padding:15px 13px 40px}.intro{margin:4px 2px 15px}.intro h1{font-size:23px;margin:0 0 5px}.intro p{margin:0;color:var(--muted);line-height:1.45}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:15px 0}.step{border:1px solid var(--line);border-radius:10px;background:#e2e8ed;padding:10px 5px;text-align:center;color:#596975;font-size:11px;font-weight:700}.step b{display:block;margin:0 auto 5px;width:25px;height:25px;border-radius:50%;background:#cbd5dd;line-height:25px;font-size:13px}.step.active{background:var(--blue2);border:2px solid var(--blue);color:#124d70}.step.active b,.step.done b{background:var(--blue);color:#fff}.step.done{background:#e7f2ec;color:var(--green)}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:0 2px 7px #2135470c;margin-bottom:12px}.panel h2{font-size:18px;margin:0 0 5px}.sub{color:var(--muted);font-size:13px;line-height:1.45;margin:0 0 15px}
+label{display:block;font-size:13px;font-weight:700;margin:11px 0 5px}input,select{width:100%;border:1px solid #bdc9d2;border-radius:8px;padding:12px;font-size:16px;background:#fff;color:#1d2932}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.bigchoices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.choice{border:1px solid var(--line);background:#fff;border-radius:11px;padding:13px 10px;text-align:left;min-height:76px;cursor:pointer}.choice strong{display:block;font-size:14px;margin-bottom:4px}.choice small{color:var(--muted);font-size:12px}.choice.selected{border:2px solid var(--blue);background:var(--blue2)}
+button{font:inherit;cursor:pointer}.primary{width:100%;border:0;background:var(--blue);color:white;border-radius:10px;padding:15px;font-weight:800;font-size:16px;box-shadow:0 2px 0 #0e4e72}.secondary{border:1px solid #b9c6cf;background:#f5f7f8;color:#253743;border-radius:9px;padding:12px;font-weight:700}.navbuttons{display:grid;grid-template-columns:1fr 2fr;gap:9px;margin-top:14px}.navbuttons.single{grid-template-columns:1fr}
+.toolbar{display:flex;gap:7px;flex-wrap:wrap;margin:0 0 12px}.toolbar button{flex:1}
+.note{background:var(--amber);border:1px solid #ead39a;padding:11px;border-radius:9px;font-size:12px;line-height:1.45;margin-top:12px}
+.result{background:#eef5f8;border:1px solid #cbdde7;padding:12px;border-radius:10px;margin-top:12px;font-size:13px;line-height:1.55}
+table{width:100%;border-collapse:collapse;font-size:12px;margin-top:10px}td,th{border-bottom:1px solid var(--line);padding:9px 5px;text-align:left}th{color:var(--muted)}
+#drawing{width:100%;max-height:260px;background:#f8f9f7;border:1px solid var(--line);border-radius:9px;margin-top:10px}
+.hidden{display:none!important}.foot{font-size:11px;color:var(--muted);text-align:center;padding:10px}
+@media(max-width:520px){.grid{grid-template-columns:1fr 1fr}.step{font-size:10px;padding:8px 2px}.panel{padding:14px}.bigchoices{grid-template-columns:1fr 1fr}}
+</style></head>
+<body>
+<header><div class="brand">CNC WERKSTATT</div><p>Dein Schritt-für-Schritt-Assistent für woodWOP 5</p></header>
+<main>
+<div class="intro"><h1>Neues Werkstück vorbereiten</h1><p>Wir gehen gemeinsam durch die wichtigsten Angaben. Am Ende erhältst du einen übersichtlichen Bearbeitungsplan.</p></div>
+<div class="steps">
+<div class="step active" id="s1"><b>1</b>Werkstück</div><div class="step" id="s2"><b>2</b>Bearbeitung</div><div class="step" id="s3"><b>3</b>Position</div><div class="step" id="s4"><b>4</b>Prüfen</div>
+</div>
+<section class="panel" id="page1">
+<h2>Schritt 1 – Werkstückdaten</h2><p class="sub">Was möchtest du auf der CNC bearbeiten?</p>
+<div class="bigchoices" id="partChoices">
+<button class="choice selected" data-val="Schrankseite / Korpusteil" onclick="pickPart(this)"><strong>▤ Schrankseite</strong><small>Korpusseiten und Wangen</small></button>
+<button class="choice" data-val="Einlegeboden" onclick="pickPart(this)"><strong>▱ Einlegeboden</strong><small>Böden und Fachböden</small></button>
+<button class="choice" data-val="Front / Tür" onclick="pickPart(this)"><strong>▣ Front / Tür</strong><small>Fronten und Türen</small></button>
+<button class="choice" data-val="Sonderteil" onclick="pickPart(this)"><strong>◇ Sonderteil</strong><small>Andere Plattenwerkstücke</small></button>
+</div>
+<div class="grid">
+<div><label for="partName">Werkstück-Bezeichnung</label><input id="partName" value="Schrankseite links"></div>
+<div><label for="material">Material</label><select id="material"><option>Spanplatte beschichtet</option><option>MDF</option><option>Multiplex</option><option>Massivholz</option><option>HPL / Schichtstoff</option><option>Sonstiges</option></select></div>
+<div><label for="len">Länge X (mm)</label><input id="len" type="number" min="1" value="800"></div>
+<div><label for="wid">Breite Y (mm)</label><input id="wid" type="number" min="1" value="400"></div>
+<div><label for="thk">Stärke Z (mm)</label><input id="thk" type="number" min="1" value="19"></div>
+<div><label for="origin">Nullpunkt / Bezug</label><select id="origin"><option value="unten-links">Unten links</option><option value="oben-links">Oben links</option></select></div>
+</div>
+<div class="navbuttons single"><button class="primary" onclick="go(2)">WEITER: BEARBEITUNG WÄHLEN →</button></div>
+</section>
+<section class="panel hidden" id="page2">
+<h2>Schritt 2 – Bearbeitung auswählen</h2><p class="sub">Welche Bearbeitung möchtest du hinzufügen? Du kannst später weitere Bearbeitungen ergänzen.</p>
+<div class="bigchoices">
+<button class="choice selected" data-type="Bohrung" onclick="pickType(this)"><strong>◉ Bohrung</strong><small>Dübel, Bodenträger, Beschläge</small></button>
+<button class="choice" data-type="Tasche" onclick="pickType(this)"><strong>▣ Tasche</strong><small>Ausfräsungen und Beschläge</small></button>
+<button class="choice" data-type="Nut" onclick="pickType(this)"><strong>▬ Nut / Falz</strong><small>Rückwand und Verbindungen</small></button>
+<button class="choice" data-type="Kontur" onclick="pickType(this)"><strong>◇ Kontur</strong><small>Ausschnitte und Formen</small></button>
+</div>
+<div class="note">Beschlagbibliothek und automatische Zeichnungserkennung sind für eine spätere Ausbaustufe vorgesehen. Beschlagmaße werden nicht geraten.</div>
+<div class="navbuttons"><button class="secondary" onclick="go(1)">← Zurück</button><button class="primary" onclick="go(3)">WEITER: POSITION FESTLEGEN →</button></div>
+</section>
+<section class="panel hidden" id="page3">
+<h2>Schritt 3 – Bearbeitungsposition</h2><p class="sub">Trage die Maße aus deiner Zeichnung ein. X und Y beschreiben hier den Mittelpunkt der Bohrung bzw. den Bezugspunkt der Bearbeitung.</p>
+<div class="grid">
+<div><label for="x">Position X (mm)</label><input id="x" type="number" value="50" step=".1"></div>
+<div><label for="y">Position Y (mm)</label><input id="y" type="number" value="50" step=".1"></div>
+<div><label for="dia">Durchmesser / Maß (mm)</label><input id="dia" type="number" value="8" step=".1"></div>
+<div><label for="dep">Tiefe (mm)</label><input id="dep" type="number" value="15" step=".1"></div>
+<div><label for="side">Bearbeitungsseite</label><select id="side"><option>Oberseite</option><option>Unterseite</option><option>Stirnseite</option></select></div>
+</div>
+<div class="navbuttons"><button class="secondary" onclick="go(2)">← Zurück</button><button class="primary" onclick="prepareReview()">WEITER: BEARBEITUNG PRÜFEN →</button></div>
+</section>
+<section class="panel hidden" id="page4">
+<h2>Schritt 4 – Prüfen und übernehmen</h2><p class="sub">Kontrolliere Werkstück und Bearbeitung, bevor du sie in die Liste aufnimmst.</p>
+<div id="review" class="result"></div><svg id="drawing" viewBox="0 0 600 300" aria-label="Werkstückvorschau"></svg>
+<div id="check" class="result"></div>
+<div class="navbuttons"><button class="secondary" onclick="go(3)">← ÄNDERN</button><button class="primary" onclick="addOp()">✓ IN BEARBEITUNGSPLAN ÜBERNEHMEN</button></div>
+</section>
+<section class="panel">
+<h2>Dein Bearbeitungsplan</h2><p class="sub">Hier sammelst du die einzelnen Bearbeitungsschritte für dieses Werkstück.</p>
+<div id="empty" class="muted">Noch keine Bearbeitungen hinzugefügt.</div><div style="overflow-x:auto"><table id="opTable" class="hidden"><thead><tr><th>#</th><th>Art</th><th>X</th><th>Y</th><th>Maß</th><th>Tiefe</th><th>Seite</th><th></th></tr></thead><tbody id="ops"></tbody></table></div>
+<div class="toolbar" style="margin-top:13px"><button class="secondary" onclick="saveLocal()">Projekt lokal speichern</button><button class="secondary" onclick="exportJSON()">Projektdatei laden</button><button class="secondary" onclick="exportCSV()">CSV exportieren</button></div>
+<div class="note"><b>Wichtig:</b> Dieser Prototyp erstellt einen geometrischen Bearbeitungsplan, noch keine maschinenfertige MPR-Datei. Vor jeder CNC-Ausführung müssen Nullpunkt, Werkzeug, Aggregat, Spannmittel, Bearbeitungsseite und Sicherheitsabstände anhand eurer Maschine geprüft werden.</div>
+</section>
+<div class="foot">CNC Werkstatt Companion · Prototyp 0.3 · Eigenständiges Hilfswerkzeug, keine offizielle HOMAG-Software</div>
+</main>
+<script>
+let step=1,part='Schrankseite / Korpusteil',type='Bohrung',ops=[];
+const $=id=>document.getElementById(id),v=id=>$(id).value,n=id=>Number(v(id));
+function pickPart(b){document.querySelectorAll('#partChoices .choice').forEach(x=>x.classList.remove('selected'));b.classList.add('selected');part=b.dataset.val}
+function pickType(b){document.querySelectorAll('#page2 .choice').forEach(x=>x.classList.remove('selected'));b.classList.add('selected');type=b.dataset.type}
+function go(s){if(s>1&&!(n('len')>0&&n('wid')>0&&n('thk')>0)){alert('Bitte gültige Werkstückmaße eingeben.');return}step=s;[1,2,3,4].forEach(i=>{$('page'+i).classList.toggle('hidden',i!==s);$('s'+i).classList.toggle('active',i===s);$('s'+i).classList.toggle('done',i<s)});window.scrollTo({top:0,behavior:'smooth'})}
+function prepareReview(){let X=n('x'),Y=n('y'),L=n('len'),W=n('wid'),D=n('dia'),dep=n('dep');let valid=X>=0&&X<=L&&Y>=0&&Y<=W&&D>0&&dep>=0&&dep<=n('thk');$('review').innerHTML=`<b>${part}</b> · ${v('partName')}<br>${L} × ${W} × ${n('thk')} mm · ${v('material')}<hr><b>${type}</b> · X ${X} mm · Y ${Y} mm<br>Maß / Ø ${D} mm · Tiefe ${dep} mm · ${v('side')}<br>Bezug: ${v('origin')}`;$('check').textContent=valid?'✓ Position und Tiefe liegen innerhalb der eingegebenen Werkstückgrenzen. Bitte Zeichnung und Bezugskanten nochmals abgleichen.':'⚠ Werte außerhalb der Werkstückgrenzen oder ungültig. Bitte Eingaben korrigieren.';$('check').style.background=valid?'#eaf4ed':'#fff0ed';draw();go(4)}
+function draw(){let L=n('len'),W=n('wid'),X=n('x'),Y=n('y'),D=n('dia'),cx=55+X/L*490,cy=25+Y/W*225;if(v('origin')==='oben-links')cy=25+Y/W*225;$('drawing').innerHTML=`<rect x="55" y="25" width="490" height="225" fill="#d9c9a6" stroke="#344b5d" stroke-width="2"/><circle cx="${cx}" cy="${cy}" r="${Math.max(4,D/L*490/2)}" fill="#fff" stroke="#1c3545" stroke-width="2"/><path d="M${cx-10} ${cy}h20 M${cx} ${cy-10}v20" stroke="#b33" stroke-width="1.5"/><text x="300" y="280" text-anchor="middle" font-size="14" fill="#344b5d">${L} mm</text><text x="20" y="140" transform="rotate(-90 20 140)" text-anchor="middle" font-size="14" fill="#344b5d">${W} mm</text>`}
+function addOp(){let L=n('len'),W=n('wid'),X=n('x'),Y=n('y'),D=n('dia'),dep=n('dep');if(!(X>=0&&X<=L&&Y>=0&&Y<=W&&D>0&&dep>=0&&dep<=n('thk'))){alert('Bitte zuerst die Maße korrigieren.');return}ops.push({type,x:X,y:v('origin')==='oben-links'?W-Y:Y,measure:D,depth:dep,side:v('side')});render();go(1)}
+function render(){$('empty').classList.toggle('hidden',ops.length>0);$('opTable').classList.toggle('hidden',!ops.length);$('ops').innerHTML=ops.map((o,i)=>`<tr><td>${i+1}</td><td>${o.type}</td><td>${o.x}</td><td>${o.y}</td><td>${o.measure}</td><td>${o.depth}</td><td>${o.side}</td><td><button class="secondary" onclick="del(${i})">Entfernen</button></td></tr>`).join('')}
+function del(i){ops.splice(i,1);render()}
+function project(){return {app:'CNC Werkstatt Companion',version:'0.3',part:{category:part,name:v('partName'),material:v('material'),length:n('len'),width:n('wid'),thickness:n('thk'),origin:v('origin')},operations:ops}}
+function saveLocal(){try{localStorage.setItem('cncWerkstatt03',JSON.stringify(project()));alert('Projekt auf diesem Browser gespeichert. Für andere Geräte bitte zusätzlich die Projektdatei exportieren.')}catch(e){alert('Lokales Speichern nicht möglich. Bitte Projektdatei exportieren.')}}
+function download(name,data,mime){let a=document.createElement('a'),u=URL.createObjectURL(new Blob([data],{type:mime}));a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)}
+function exportJSON(){download('cnc-werkstueck-projekt.json',JSON.stringify(project(),null,2),'application/json')}
+function exportCSV(){let rows=[['Nr','Typ','X_mm','Y_mm','Mass_mm','Tiefe_mm','Seite'],...ops.map((o,i)=>[i+1,o.type,o.x,o.y,o.measure,o.depth,o.side])];download('cnc-bearbeitungsplan.csv',rows.map(r=>r.join(';')).join('\n'),'text/csv;charset=utf-8')}
+window.addEventListener('load',()=>{try{let p=JSON.parse(localStorage.getItem('cncWerkstatt03'));if(p){part=p.part.category||part;$('partName').value=p.part.name;$('material').value=p.part.material;$('len').value=p.part.length;$('wid').value=p.part.width;$('thk').value=p.part.thickness;$('origin').value=p.part.origin;ops=p.operations||[];render();document.querySelectorAll('#partChoices .choice').forEach(b=>b.classList.toggle('selected',b.dataset.val===part))}}catch(e){}});
+</script></body></html>
